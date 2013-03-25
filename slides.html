@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <img src="images/logo.png" width="160" height="104">
+    <meta charset="utf-8">
+
+    <title>Un-academic functional programming</title>
+
+    <meta name="description" content="Un-academic approach to functional programming in Scala.">
+    <meta name="author" content="Kaare Nilsen">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/arktekk.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/idea.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write('<link rel="stylesheet" href="css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+    <h1>Monoids in the category of endofunctors</h1>
+
+    <p>&nbsp;</p>
+
+    <h3>Kaare Nilsen</h3>
+</section>
+<section>
+    <img src="images/monad.jpg"/>
+</section>
+<section>
+    <section>
+        <h2>Definition functional programming?</h2>
+        <aside class="notes">
+            Før vi starter med programmet for i dag.. La meg forsøke å definere hva jeg mener med funksjonell
+            programmering:
+            <p>
+                We construct our programs using only pure functions. In other words, functions that have no side
+                effects. What does this mean exactly? Performing any of the following actions directly would
+                involve a side effect:
+            </p>
+
+            <p>
+                Reassigning a variable Modifying a data structure in place Setting a field on an
+                object Throwing
+                an exception or halting with an error Printing to the console or reading user input Reading from
+                or writing to a file Drawing on the screen
+            </p>
+        </aside>
+    </section>
+
+</section>
+<section>
+    <h2>Pure function</h2>
+
+    <h3>f(x)</h3>
+    <aside class="notes">
+        <p>
+            A function with input type A and output type B (written in Scala as a single type: A => B) is a
+            computation which relates every value a of type A to exactly one value b of type B such that b is
+            determined solely by the value of a.
+        </p>
+
+        <p>
+            For example, a function intToString having type Int => String will take every integer to a
+            corresponding
+            string. Furthermore, if it really is a function, it will do nothing else.
+        </p>
+
+        <p>
+            In other words, a function has no observable effect on the execution of the program other than to
+            compute a result given its inputs; we say that it has no side effects. We sometimes qualify such
+            functions as pure functions to make this more explicit. You already know about pure functions.
+            Consider
+            the addition (+) function on integers. It takes two integer values and returns an integer value. For
+            any
+            two given integer values it will always return the same integer value. Another example is the length
+            function of a String in Java, Scala, and many other languages. For any given string, the same length
+            is
+            always returned and nothing else occurs.
+        </p>
+
+        <p>
+            We can formalize this idea of pure functions by using the concept of referential transparency (RT).
+            This
+            is a property of expressions in general and not just
+            functions. For the purposes of our discussion, consider an expression to be any part of a program
+            that
+            can be evaluated to a result, i.e. anything that you could type into the Scala interpreter and get
+            an
+            answer. For example, 2 + 3 is an expression that applies the pure function + to the values 2 and 3
+            (which are also expressions). This has no side effect. The evaluation of this expression results in
+            the
+            same value 5 every time. In fact, if you saw 2 + 3 in a program you could simply replace it with the
+            value 5 and it would not change a thing about your program.
+            This is all it means for an expression to be referentially transparent—in any program, the
+            expression
+            can be replaced by its result without changing the meaning of the program. And we say that a
+            function is
+            pure if its body is RT, assuming RT inputs.
+        </p>
+
+    </aside>
+</section>
+<section>
+    <h2>Referential Transparency</h2>
+    <aside class="notes">
+
+        <p>We can formalize this idea of pure functions by using the concept of referential transparency (RT).
+            This
+            is a property of expressions in general and not just functions. For the purposes of our discussion,
+            consider an expression to be any part of a program that can be evaluated to a result, i.e. anything
+            that
+            you could type into the Scala interpreter and get an answer. For example, 2 + 3 is an expression
+            that
+            applies the pure function + to the values 2 and 3 (which are also expressions). This has no side
+            effect.
+            The evaluation of this expression results in the same value 5 every time. In fact, if you saw 2 + 3
+            in a
+            program you could simply replace it with the value 5 and it would not change a thing about your
+            program.
+            This is all it means for an expression to be referentially transparent—in any program, the
+            expression
+            can be replaced by its result without changing the meaning of the program. And we say that a
+            function is
+            pure if its body is RT, assuming RT inputs.
+        </p>
+
+        <p>
+            SIDEBAR
+            Referential transparency and purity
+            An expression e is referentially transparent if for all programs p, all occurrences of e in p can be
+            replaced by the result of evaluating e, without affecting the observable behavior of p. A function f
+            is
+            pure if the expression f(x) is referentially transparent for all referentially transparent x.1
+        </p>
+    </aside>
+</section>
+<section>
+    <section>
+        <img src="images/first-class.png"/>
+        <aside class="notes">
+            <p>
+                In computer science, a programming language is said to have first-class functions if it treats
+                functions
+                as first-class citizens. Specifically, this means the language supports passing functions as
+                arguments
+                to other functions, returning them as the values from other functions, and assigning them to
+                variables
+                or storing them in data structures.[1] Some programming language theorists require support for
+                anonymous
+                functions as well.[2]
+            </p>
+
+        </aside>
+    </section>
+    <section>
+        <iframe height="900" width="900" src="http://localhost:1338"></iframe>
+    </section>
+</section>
+<section>
+    <section>
+        <h2>Higher Order Function</h2>
+
+        <h3>f(f(x))</h3>
+        <aside class="notes">
+            <p>
+                A function that takes another function as its argument is known as a higher-order function
+            </p>
+
+            <p>
+                higher-order function (also functional form, functional or functor) is a function that does at least
+                one of the following:
+            </p>
+            <ul>
+                <li>take one or more functions as an input</li>
+                <li>output a function</li>
+            </ul>
+
+        </aside>
+    </section>
+    <section>
+        <iframe height="500" width="900" src="http://localhost:1338" seamless="seamless"></iframe>
+    </section>
+</section>
+<section>
+    <h2>Monomorphic functions</h2>
+    <aside class="notes">
+        Funksjoner som bare kan operere på argumenter av en gitt type..
+        def numWriter(a:Int){println(a)}
+    </aside>
+</section>
+<section>
+    <h2>Polymorphic functions</h2>
+    <aside class="notes">
+        Funksjoner som kan benyttes på en flere typer
+        <p>
+            def writer[A](a:A){println(a)}
+        </p>
+
+        <p>
+            def numWriter[A:Numeric](a:A){println(a)}
+        </p>
+    </aside>
+</section>
+<section>
+    <h2>Endofunction</h2>
+
+    <h3>A => A</h3>
+    <aside class="notes">
+
+    </aside>
+</section>
+
+<section>
+    <section>
+        <h2>Currying</h2>
+
+        <h3>(A,B)=>C</h3>
+
+        <h3>A => B => C</h3>
+        <aside class="notes">
+            <p>Ta case class Person(name:String, age:Int) i repl</p>
+
+            <p>så en (Person(_,_))</p>
+
+            <p>så en (Person(_,_)).curried</p>
+
+            <p>
+                Every function that takes more than one argument has a kind of normal form, called its curried form.2
+                Instead
+                of a function taking a single tuple of n arguments, a curried function is a chain of n functions that
+                take
+                one argument each. For example, a function of a type like (A,B) => C can be transformed into a function
+                of
+                type A => (B => C). The resulting (curried) function takes the first argument of type A and then returns
+                another function that receives the second argument of type B. The arrow (=>) in function types actually
+                associates to the right, so the parentheses in this case are superfluous. You may often see a type like
+                this
+                writtenA => B => C.
+                Footnote 2mThis is named after the mathematician Haskell Curry, who discovered the principle. It was
+                independently discovered earlier by Moses Schoenfinkel, but "Schoenfinkelization" didn't catch on.
+            </p>
+
+
+        </aside>
+    </section>
+    <section>
+        <iframe height="900" width="900" src="http://localhost:1338"></iframe>
+    </section>
+</section>
+
+<section>
+    <section>
+        <h2>Partial application</h2>
+
+        <aside class="notes">
+            <p>
+                scala> val timesTwo: Int => Int = (_ * 2)
+            </p>
+
+            <p>
+                Partial application is straightforward. It's simply the act of passing a function some of its arguments
+                and leaving the rest unspecified. The result is a function that takes the rest of the arguments. For
+                example:
+            </p>
+
+            <p>
+                Here we have partially applied the * function by passing 2 as one of its arguments. The result is a
+                function that multiplies its argument by 2.
+            </p>
+
+        </aside>
+    </section>
+    <section>
+        <iframe height="900" width="900" src="http://localhost:1338"></iframe>
+    </section>
+</section>
+
+<section>
+    <section>
+        <h2>Partial function</h2>
+
+        <aside class="notes">
+            <p>
+                Dette ligna jo i ord iaff. Men ikke i betydning
+            </p>
+
+            <p>
+                A function works for every argument of the defined type. In other words, a function defined as (Int) =>
+                String takes any Int and returns a String.
+            </p>
+
+            <p>
+                A Partial Function is only defined for certain values of the defined type. A Partial Function (Int) =>
+                String might not accept every Int.
+
+            </p>
+
+            <p>
+                isDefinedAt is a method on PartialFunction that can be used to determine if the PartialFunction will
+                accept a given argument.
+            </p>
+
+            <p>
+                Note PartialFunction is unrelated to a partially applied function that we talked about earlier.
+                See Also Effective Scala has opinions about PartialFunction.
+                scala> val one: PartialFunction[Int, String] = { case 1 => "one" }
+                one: PartialFunction[Int,String] = &lt;function1&gt;
+            </p>
+
+            <p>
+                scala> one.isDefinedAt(1)
+                res0: Boolean = true
+            </p>
+
+            <p>
+                scala> one.isDefinedAt(2)
+                res1: Boolean = false
+            </p>
+
+            <p>
+                You can apply a partial function.
+                scala> one(1)
+                res2: String = one
+            </p>
+
+            <p>
+                PartialFunctions can be composed with something new, called orElse, that reflects whether the
+                PartialFunction is defined over the supplied argument.
+            </p>
+
+            <p>
+                scala> val two: PartialFunction[Int, String] = { case 2 => "two" }
+            </p>
+
+            <p>
+                scala> val three: PartialFunction[Int, String] = { case 3 => "three" }
+            </p>
+
+            <p>
+                scala> val wildcard: PartialFunction[Int, String] = { case _ => "something else" }
+            </p>
+
+            <p>
+                scala> val partial = one orElse two orElse three orElse wildcard
+            </p>
+
+            <p>
+                scala> partial(5)
+            </p>
+
+            <p>
+                res24: String = something else
+            </p>
+
+            <p>
+                scala> partial(3)
+            </p>
+
+            <p>
+                res25: String = three
+            </p>
+
+            <p>
+                scala> partial(2)
+            </p>
+
+            <p>
+                res26: String = two
+            </p>
+
+            <p>
+                scala> partial(1)
+            </p>
+
+            <p>
+                res27: String = one
+            </p>
+
+            <p>
+                scala> partial(0)
+            </p>
+
+            <p>
+                res28: String = something else
+            </p>
+
+        </aside>
+    </section>
+    <section>
+        <iframe height="900" width="900" src="http://localhost:1338"></iframe>
+    </section>
+</section>
+
+<section>
+    <section>
+    					
+    						<pre><code class="scala">
+                                val writer = new PrintWriter(
+                                new Writer {
+                                def write(cbuf: Array[Char], off: Int, len: Int) {
+                                bucketFunc().write(cbuf, off, len)
+                                }
+                                def flush() {}
+                                def close() {}
+                                }
+                                )
+
+                            </code></pre>
+
+    </section>
+    <section>
+        <iframe height="900" width="900" src="http://localhost:1338"></iframe>
+    </section>
+</section>
+</div>
+</div>
+
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: false,
+        keyboard: true,
+        overview: true,
+
+        theme: Reveal.getQueryHash().theme || 'arktekk', // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'concave', //default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            { src: 'lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            } },
+            { src: 'socket.io/socket.io.js', async: true },
+            { src: 'plugin/notes-server/client.js', async: true },
+            { src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            } },
+            { src: 'plugin/zoom-js/zoom.js', async: true, condition: function () {
+                return !!document.body.classList;
+            } },
+            { src: 'plugin/notes/notes.js', async: true, condition: function () {
+                return !!document.body.classList;
+            } }
+            //{ src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+    });
+
+</script>
+</body>
+</html>
