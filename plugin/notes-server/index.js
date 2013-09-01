@@ -30,7 +30,8 @@ app.configure(function() {
 });
 
 app.get("/", function(req, res) {
-	fs.createReadStream(opts.baseDir + '/slides.html').pipe(res);
+	res.writeHead(200, {'Content-Type': 'text/html'});
+	fs.createReadStream(opts.baseDir + '/slidesmd.html').pipe(res);
 });
 
 app.get("/notes/:socketId", function(req, res) {
