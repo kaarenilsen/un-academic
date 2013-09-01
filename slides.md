@@ -459,6 +459,163 @@
     </p>
 </aside>
 
+----
+## Function Composition
 
+---
+<iframe height="900" width="900" src="http://localhost:1338"></iframe>
+<aside class="notes">
+	<p>
+		Function Composition
+		Let’s make two helpful functions:
+		val addUmm: (String) => String = {x=> x + " umm"}
+		val addAhem: (String) => String = {x=> x + " ahem"}
+    </p>
+    <p>
+		compose
+		compose makes a new function that composes other functions f(g(x))
+		addAhem(addUmm("Yo"))
+		val ummThenAhem = addAhem compose addUmm
+    </p>
+    <p>
+		andThen
+		andThen is like compose, but calls the first function and then the second, g(f(x))
+		addUmm(addAhem("Yo"))
+		val ummThenAhem = addAhem compose addUmm
+    </p>
+</aside>
 
+----
+## Functor
 
+### A => B
+
+<aside class="notes">
+	functor is  a container that allows us to apply a function to all of its elements. 
+</aside>
+
+---
+
+``` scala
+trait Functor[F[_]] {
+  def map[A, B](f: A => B, a: F[A]): F[B]
+}
+```
+
+<aside class="notes">
+    This one let’s us map a function over a List, which means that this functor looks like a container that allows us to apply a function to all of its elements.   
+    This is a very intuitive way to think about functors.	
+</aside>	
+
+----
+## Applicative Functor
+
+---
+
+``` scala
+trait Applicative[F[_]] extends Functor[F] {
+  def apMap[A, B](f: F[A => B], a: F[A]): F[B]
+  def point[A](a: A): F[A]
+  override final def map[A, B](f: A => B, a: F[A]) = apMap(point(f), a)
+}
+```
+
+----
+## Semigroup
+
+<aside class="notes">
+	Semigroup er en monoid uten zero
+</aside>	
+
+---
+## Semigroup
+
+### binary associative operation
+
+<aside class="notes">
+	if we combine three strings by saying (r + s + t), the operation is associative —it doesn't matter whether we parenthesize it ((r + s) + t) or (r + (s + t)).
+</aside>	
+
+---
+
+``` scala
+trait SemiGroup[A] {
+  def append(a1: A, a2: A): A
+}
+```
+
+----
+## Monoid
+
+### (er en semigroup :))
+
+<aside class="notes">
+	<p>
+		Just what is a monoid, then? It is simply an implementation of an interface governed by some laws. Stated tersely, a monoid is a type together with an associative binary operation (op) which has an identity element (zero).
+	</p>
+	<p>
+		Først og fremst se på dette som et pattern. en navngitt abstraksjon om du vil
+	</p>		
+</aside>
+
+---
+## Monoid
+
+### Identity (zero)
+
+<aside class="notes">
+	Let's consider the algebra of string concatenation. We can add "foo" + "bar" to get "foobar", and the empty string is an identity element for that operation. That is, if we say (s + "") or ("" + s), the result is always s.
+</aside>	
+
+---
+
+``` scala
+trait Monoid[A] {
+  def append(a1: A, a2: A): A
+  def zero: A
+}
+```
+
+----
+## Monad
+
+<aside class="notes">
+	Design pattern that allows us to create pipelines of composed functions
+	Monad er en generell container for datastrukturerer. Den har  pluss (kombinator),  og en unit (zero)
+</aside>
+
+---
+
+## THE THREE MONAD LAWS	
+
+1. A monad may not injure a human being or, through inaction, allow a human being to come to harm.
+2. A monad must obey the orders given to it by human beings, except where such orders would conflict with the First Law.
+3. A monad must protect its own existence as long as such protection does not conflict with the First or Second Laws.
+
+<aside class="notes">
+	err.. nei det var ikke monad lovene.....
+</aside>	
+
+---
+## Warm Fuzzy Thing
+
+![cute](/images/cute.jpg)
+
+<aside class="notes">
+	our biggest mistake [in designing Haskell was u]sing the scary term "monad" rather than "warm fuzzy thing". :)
+	Simon PJ,
+</aside>	
+
+---
+
+``` scala
+trait Monad[F[_]] extends Applicative[F] {
+  def flatMap[A, B](f: A => F[B], a: F[A]): F[B]  
+}
+```
+
+<aside class="notes">
+	<p>Til forskjell fra applicative functor så er rekkefølgen av sekvenseringen av komposisjonen i en monad definert</p>
+	<p>Alt dette handler om composition. SÅ disse begrepene er her egentlig bare for å gjøre ting som i utgangspuntet ikke er composable composable</p>
+
+</aside>	
