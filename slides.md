@@ -186,6 +186,19 @@
   def numWriter(a:Int){println(a)}
 </aside>
 
+---
+<section>
+	<iframe height="900" width="900" src="http://localhost:1338"></iframe>
+</section>
+
+
+<aside class="notes">
+  Funksjoner som bare kan operere på argumenter av en gitt type..
+  def numWriter(a:Int){println(a)}
+</aside>
+
+
+
 ----
 ## Polymorphic functions
 
@@ -200,14 +213,40 @@
   </p>
 </aside>
 
+---
+<section>
+	<iframe height="900" width="900" src="http://localhost:1338"></iframe>
+</section>
+
+<aside class="notes">
+  Funksjoner som kan benyttes på en flere typer
+  <p>
+    def writer[A](a:A){println(a)}
+  </p>
+
+  <p>
+	def numWriter[A:Numeric](a:A){println(a)}
+  </p>
+</aside>
+
+
 ----
 ## Endofunction
 
 ### A => A
 
 <aside class="notes">
-
+	Funksjon som returnerer samme type som den tar inn.. eksempel
 </aside>
+
+---
+<section>
+	<iframe height="900" width="900" src="http://localhost:1338"></iframe>
+</section>
+
+<aside class="notes">
+	def inc(i:Int):Int = i + 1
+</aside>	
 
 ----        
 ## Currying
@@ -547,7 +586,7 @@ trait SemiGroup[A] {
 ----
 ## Monoid
 
-### (er en semigroup :))
+### (er også en semigroup :))
 
 <aside class="notes">
 	<p>
@@ -578,6 +617,8 @@ trait Monoid[A] {
 
 ----
 ## Monad
+
+### (er også en Monoid :))
 
 <aside class="notes">
 	Design pattern that allows us to create pipelines of composed functions
