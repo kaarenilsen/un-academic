@@ -77,6 +77,10 @@
         pure if its body is RT, assuming RT inputs.
     </p>
 
+    <p>
+		En funksjon er ikke pure om den endrer tilstand (global tilstand)
+	</p>
+
 </aside>
 
 ----
@@ -527,7 +531,7 @@
 ----
 ## Functor
 
-### A => B
+### F[A] => F[B]
 
 <aside class="notes">
 	functor is  a container that allows us to apply a function to all of its elements. 
