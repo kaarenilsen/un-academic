@@ -77,6 +77,10 @@
         pure if its body is RT, assuming RT inputs.
     </p>
 
+    <p>
+		En funksjon er ikke pure om den endrer tilstand (global tilstand)
+	</p>
+
 </aside>
 
 ----
