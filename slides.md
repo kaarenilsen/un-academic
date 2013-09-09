@@ -129,15 +129,6 @@
         anonymous
         functions as well.[2]
     </p>
-
-</aside>
-
----
-<section>
-    <iframe height="900" width="900" src="http://localhost:1338"></iframe>
-</section>
-
-<aside class="notes">
 	<pre>
 	import collection.mutable
 
@@ -186,19 +177,6 @@
   def numWriter(a:Int){println(a)}
 </aside>
 
----
-<section>
-	<iframe height="900" width="900" src="http://localhost:1338"></iframe>
-</section>
-
-
-<aside class="notes">
-  Funksjoner som bare kan operere på argumenter av en gitt type..
-  def numWriter(a:Int){println(a)}
-</aside>
-
-
-
 ----
 ## Polymorphic functions
 
@@ -213,23 +191,6 @@
   </p>
 </aside>
 
----
-<section>
-	<iframe height="900" width="900" src="http://localhost:1338"></iframe>
-</section>
-
-<aside class="notes">
-  Funksjoner som kan benyttes på en flere typer
-  <p>
-    def writer[A](a:A){println(a)}
-  </p>
-
-  <p>
-	def numWriter[A:Numeric](a:A){println(a)}
-  </p>
-</aside>
-
-
 ----
 ## Endofunction
 
@@ -237,14 +198,7 @@
 
 <aside class="notes">
 	Funksjon som returnerer samme type som den tar inn.. eksempel
-</aside>
 
----
-<section>
-	<iframe height="900" width="900" src="http://localhost:1338"></iframe>
-</section>
-
-<aside class="notes">
 	def inc(i:Int):Int = i + 1
 </aside>	
 
@@ -274,35 +228,16 @@
         independently discovered earlier by Moses Schoenfinkel, but "Schoenfinkelization" didn't catch on.
     </p>
 </aside>
----
-<iframe height="900" width="900" src="http://localhost:1338"></iframe>
-
-<aside class="notes">
-    <p>Ta case class Person(name:String, age:Int) i repl</p>
-
-    <p>så en (Person(_,_))</p>
-
-    <p>så en (Person(_,_)).curried</p>
-
-    <p>
-        Every function that takes more than one argument has a kind of normal form, called its curried form.
-        Instead of a function taking a single tuple of n arguments, a curried function is a chain of n functions that 
-        take one argument each. For example, a function of a type like (A,B) => C can be transformed into a function
-        of type A => (B => C). The resulting (curried) function takes the first argument of type A and then returns
-        another function that receives the second argument of type B. The arrow (=>) in function types actually
-        associates to the right, so the parentheses in this case are superfluous. You may often see a type like this
-        written A => B => C.
-        Footnote 2mThis is named after the mathematician Haskell Curry, who discovered the principle. It was
-        independently discovered earlier by Moses Schoenfinkel, but "Schoenfinkelization" didn't catch on.
-    </p>
-</aside>
 
 ----
 ## Partial application
 
 <aside class="notes">
     <p>
-        scala> val timesTwo: Int => Int = (_ * 2)
+        def multiply(x:Int,y:Int):Int = x * y
+	  	def double:Int=>Int = multiply(2,_)
+	  	println(multiply(4,4))
+	  	println(double(3))
     </p>
 
      <p>
@@ -316,15 +251,6 @@
         function that multiplies its argument by 2.
     </p>
 
-</aside>
-
----
-<iframe height="900" width="900" src="http://localhost:1338"></iframe>
-
-<aside class="notes">
-	<p>
-		val timesTwo: Int => Int = (_ * 2)
-	</p>
 </aside>
    
 ----
@@ -412,97 +338,10 @@
         res28: String = something else
     </p>
 </aside>
----
-<iframe height="900" width="900" src="http://localhost:1338"></iframe>
-
-<aside class="notes">
-    <p>
-        Dette ligna jo i ord iaff. Men ikke i betydning
-    </p>
-    <p>
-        A function works for every argument of the defined type. In other words, a function defined as (Int) =>
-        String takes any Int and returns a String.
-    </p>
-    <p>
-        A Partial Function is only defined for certain values of the defined type. A Partial Function (Int) =>
-        String might not accept every Int.
-    </p>
-    <p>
-        isDefinedAt is a method on PartialFunction that can be used to determine if the PartialFunction will
-        accept a given argument.
-    </p>
-    <p>
-        Note PartialFunction is unrelated to a partially applied function that we talked about earlier.
-        See Also Effective Scala has opinions about PartialFunction.
-        scala> val one: PartialFunction[Int, String] = { case 1 => "one" }
-        one: PartialFunction[Int,String] = &lt;function1&gt;
-    </p>
-    <p>
-        scala> one.isDefinedAt(1)
-        res0: Boolean = true
-    </p>
-    <p>
-        scala> one.isDefinedAt(2)
-        res1: Boolean = false
-    </p>
-    <p>
-        You can apply a partial function.
-        scala> one(1)
-        res2: String = one
-    </p>
-    <p>
-        PartialFunctions can be composed with something new, called orElse, that reflects whether the
-        PartialFunction is defined over the supplied argument.
-    </p>
-    <p>
-        scala> val two: PartialFunction[Int, String] = { case 2 => "two" }
-    </p>
-    <p>
-        scala> val three: PartialFunction[Int, String] = { case 3 => "three" }
-    </p>
-    <p>
-        scala> val wildcard: PartialFunction[Int, String] = { case _ => "something else" }
-    </p>
-    <p>
-        scala> val partial = one orElse two orElse three orElse wildcard
-    </p>
-    <p>
-        scala> partial(5)
-    </p>
-    <p>
-        res24: String = something else
-    </p>
-    <p>
-        scala> partial(3)
-    </p>
-    <p>
-        res25: String = three
-    </p>
-    <p>
-        scala> partial(2)
-    </p>
-    <p>
-        res26: String = two
-    </p>
-    <p>
-        scala> partial(1)
-    </p>
-    <p>
-        res27: String = one
-    </p>
-    <p>
-        scala> partial(0)
-    </p>
-    <p>
-        res28: String = something else
-    </p>
-</aside>
 
 ----
 ## Function Composition
 
----
-<iframe height="900" width="900" src="http://localhost:1338"></iframe>
 <aside class="notes">
 	<p>
 		Function Composition
@@ -527,7 +366,7 @@
 ----
 ## Functor
 
-### A => B
+### F[A] => F[B]
 
 <aside class="notes">
 	functor is  a container that allows us to apply a function to all of its elements. 
@@ -553,14 +392,22 @@ trait Functor[F[_]] {
 
 ``` scala
 trait Applicative[F[_]] extends Functor[F] {
-  def apMap[A, B](f: F[A => B], a: F[A]): F[B]
-  def point[A](a: A): F[A]
-  override final def map[A, B](f: A => B, a: F[A]) = apMap(point(f), a)
+  def <*>[A, B](f: F[A => B], a: F[A]): F[B]
+  def pure[A](a: A): F[A]
+  override final def map[A, B](f: A => B, a: F[A]) = <*>(pure(f), a)
 }
 ```
 
+<aside class="notes">
+	Hjemme alene, eller på norsk munch operatoren :) |@|
+	
+	i haskell er det <*>
+</aside>
+
 ----
 ## Semigroup
+
+### (Semigroup er en monoid uten zero)
 
 <aside class="notes">
 	Semigroup er en monoid uten zero
@@ -586,7 +433,7 @@ trait SemiGroup[A] {
 ----
 ## Monoid
 
-### (er også en semigroup :))
+### (er også en semigroup (med zero) :))
 
 <aside class="notes">
 	<p>
@@ -618,7 +465,7 @@ trait Monoid[A] {
 ----
 ## Monad
 
-### (er også en Monoid :))
+### (er også en Monoid' :))
 
 <aside class="notes">
 	Design pattern that allows us to create pipelines of composed functions

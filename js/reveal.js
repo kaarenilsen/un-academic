@@ -1317,7 +1317,7 @@ var Reveal = (function(){
 		// Prefer slide argument, otherwise use current slide
 		slide = slide ? slide : currentSlide;
 
-		return slide && slide.parentNode && !!slide.parentNode.nodeName.match( /section/i );
+		return slide && !!slide.parentNode.nodeName.match( /section/i );
 
 	}
 
@@ -2759,17 +2759,12 @@ var Reveal = (function(){
 
 		// Returns true if we're currently on the last slide
 		isLastSlide: function() {
-			if( currentSlide ) {
-				// Does this slide has next a sibling?
-				if( currentSlide.nextElementSibling ) return false;
-
-				// If it's vertical, does its parent have a next sibling?
-				if( isVerticalSlide( currentSlide ) && currentSlide.parentNode.nextElementSibling ) return false;
-
-				return true;
+			if( currentSlide && currentSlide.classList.contains( '.stack' ) ) {
+				return currentSlide.querySelector( SLIDES_SELECTOR + '.future' ) == null ? true : false;
 			}
-
-			return false;
+			else {
+				return document.querySelector( SLIDES_SELECTOR + '.future' ) == null ? true : false;
+			}
 		},
 
 		// Checks if reveal.js has been loaded and is ready for use
